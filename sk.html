@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+  }
+
+  .cre {
+    position: absolute;
+    top: 200px;
+    left: 500px;
+    width: 150px;
+    height: 200px;
+    background-color: rgba(115, 128, 0, 0.1);
+    text-align: center;
+    line-height: 50px;
+  }
+
+  .ug {
+    position: absolute;
+    top: 100px;
+    left: 500px;
+  }
+</style>
+
+<body>
+  <a class="cre">
+    <p>上 ↑</p>
+    <p>下↓</p>
+    <p>左←</p>
+    <p>右→</p>
+    <button id='start'>开始Game</button>
+  </a>
+  <a class="ug">
+    难度：<select name='select' id='select' style="width:100px">
+      <option value="a" selected='a'>初级</option>
+      <option value="b">中级</option>
+      <option value="c">困难</option>
+    </select>
+  </a>
+  <script>
+    window.onload = function () {
+
+      document.getElementById("select").addEventListener("change", function () {
+        if (this.value === 'a') {
+          window.time = 1000
+        }
+        if (this.value === 'b') {
+          window.time = 200
+          console.log('window', window.time);
+        }
+        if (this.value === 'c') {
+          window.time = 100
+        }
+
+      });
+
+      document.getElementById("start").addEventListener("click", function () {
+        this.setAttribute("disabled", true);
+        this.style.backgroundColor = '#ccc'
+        Snake()
+      });
+      Map()
+      Food()
+      //设置键盘事件，控制器小蛇移动方向
+      document.onkeydown = function (evt) {
+        var num = evt.keyCode; //通过事件对象获得数值码，进而知道被触发键子
+        if (num === 38) {
+          window.redirect = "up";
+        }
+        if (num === 40) {
+          window.redirect = "down";
+        }
+        if (num === 37) {
+          window.redirect = "left";
+        }
+        if (num === 39) {
+          window.redirect = "right";
+        }
+      }
+    }
+    // map
+    function Map() {
+      var tu = document.createElement('div');
+      tu.style.width = 500 + 'px'
+      tu.style.height = 500 + 'px'
+      tu.style.backgroundColor = 'black'
+      tu.style.margin = '100px auto'
+      document.body.appendChild(tu)
+    }
+    // food
+    function Food() {
+      this.xFood = 0;
+      this.yFood = 0;
+      this.food = document.createElement('img');
+      this.food.style.width = 20 + 'px'
+      this.food.style.height = 20 + 'px'
+      this.food.src = "./1.jpg";
+      this.food.style.position = "absolute";
+      document.body.appendChild(this.food)
+      //  居中距离
+      var a = document.querySelector("div");
+      var lf = a.getBoundingClientRect().left
+      this.xFood = Math.floor(Math.random() * 25); //0-39的随机数
+      this.yFood = Math.floor(Math.random() * 25); //0-19的随机数
+      this.food.style.left = this.xFood * 20 + lf + 0.5 + "px";
+      this.food.style.top = this.yFood * 20 + 100 + "px";
+    }
+
+    function Snake() {
+      let len = 20
+      this.redirect = 'right'
+      var snakebody = [
+        // X,Y,颜色，蛇体
+        [0, 1, 'green', null],
+        [1, 1, 'green', null],
+        [2, 1, 'green', null],
+        [3, 1, 'red', null]
+      ];
+      var showSnake = function () {
+        for (var i = 0; i < snakebody.length; i++) {
+          //snakebody[i]//代表每个蛇节
+          //创建蛇节div
+          if (snakebody[i][3] === null) { //判断没有创建对应的蛇节
+            snakebody[i][3] = document.createElement('div');
+            //设置css样式(宽度、高度、颜色)
+            snakebody[i][3].style.width = snakebody[i][3].style.height = len + "px";
+            snakebody[i][3].style.backgroundColor = "green"
+            snakebody[i][3].style.borderRadius = 8 + 'px'
+            if (i === snakebody.length - 1) {
+              snakebody[snakebody.length - 1][3].style.backgroundImage = "url('./sk.jpg')"
+              snakebody[snakebody.length - 1][3].style.backgroundSize = '100%'
+            }
+            //绝对定位及位置
+            snakebody[i][3].style.position = "absolute";
+            //把蛇节追加给body
+            document.body.appendChild(snakebody[i][3]);
+          }
+          var a = document.querySelector("div");
+          var lf = a.getBoundingClientRect().left
+          snakebody[i][3].style.left = snakebody[i][0] * len + lf + 0.5 + "px";
+          snakebody[i][3].style.top = snakebody[i][1] * len + 100 + "px";
+        }
+      }
+      console.log('window11', window.time);
+
+      var move = setInterval(function () {
+        for (var i = 0; i < snakebody.length - 1; i++) {
+          snakebody[i][0] = snakebody[i + 1][0];
+          snakebody[i][1] = snakebody[i + 1][1];
+        }
+        // 右
+        if (window.redirect == "right") {
+          snakebody[snakebody.length - 1][0] += 1;
+        }
+        if (window.redirect == "up") {
+          snakebody[snakebody.length - 1][1] -= 1;
+        }
+        if (window.redirect == "down") {
+          snakebody[snakebody.length - 1][1] += 1;
+        }
+        if (window.redirect == "left") {
+          snakebody[snakebody.length - 1][0] -= 1;
+        }
+
+        var xsnake = snakebody[snakebody.length - 1][0]
+        var ysnake = snakebody[snakebody.length - 1][1]
+
+        if (xsnake === window.xFood && ysnake === window.yFood) {
+          var newA = [snakebody[0][0], snakebody[0][1], 'green', null]
+          snakebody.unshift(newA)
+          // 吃到删除食物
+          var img = document.querySelector("img");
+          img.remove();
+          Food()
+        }
+        if (xsnake === 25 || xsnake === -1 || ysnake === -1 || ysnake === 25) {
+          alert('Game Over ,请购买复活币继续游戏');
+          clearInterval(move);
+          document.getElementById("start").setAttribute("disabled", false);
+          window.location.reload();
+          // time = 1000
+          return false;
+        }
+        //吃到自己(蛇头坐标与其他蛇节坐标一致)
+        for (var k = 0; k < snakebody.length - 1; k++) {
+          if (snakebody[k][0] == xsnake && snakebody[k][1] == ysnake) {
+            alert('game over kill you by yourself');
+            clearInterval(move);
+            document.getElementById("start").setAttribute("disabled", false);
+            window.location.reload();
+            // time = 1000
+            return false;
+          }
+        }
+
+        showSnake()
+      }, window.time || 1000);
+    }
+  </script>
+</body>
+
+</html>
