@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    h2{
+      margin-top: 100px;
+    }
+    .pic {
+      display: none;
+      margin: auto;
+      width: 600px;
+      height: 500px;
+    }
+    .pic img {
+      display: inline-block;
+      width: 100%;
+      height: 100%;
+    } 
+  </style>
+</head>
+<body>
+  <h2 style="text-align: center;"><a id='btn' href="#">点击可获得随机狗狗一只</a></h2>
+  <div class="pic" id='div'>
+    <img
+      id="pic"
+      src=""
+      alt=""
+    >
+  </div>
+  <script>
+document.getElementById("btn").addEventListener("click",loadUser);
+        function loadUser () {
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET",'https://dog.ceo/api/breeds/image/random',true);
+            xhr.onload = function (){
+                if(this.status == 200) {
+                  document.getElementById("div").style.display='block'
+                    var img = JSON.parse(this.responseText);
+                    document.getElementById("pic").src =img.message
+                }
+            }
+            xhr.send();
+        }    
+
+  </script>
+</body>
+</html>
